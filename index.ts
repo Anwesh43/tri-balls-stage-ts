@@ -201,5 +201,26 @@ class BallList {
     startUpdating(cb : Function) {
         this.curr.startUpdating(cb)
     }
+}
 
+class Renderer {
+
+    bl : BallList = new BallList()
+    animator : Animator = new Animator()
+
+    render(context : CanvasRenderingContext2D) {
+        this.bl.draw(context)
+    }
+
+    handleTap(cb : Function) {
+        this.bl.startUpdating(() => {
+            this.animator.start(() => {
+                cb()
+                this.bl.update(() => {
+                    this.animator.stop()
+                    cb()
+                })
+            })
+        })
+    }
 }
