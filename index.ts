@@ -1,6 +1,6 @@
 const w : number = window.innerWidth
 const h : number = window.innerHeight
-const scGap : number = 0.02
+const scGap : number = 0.01
 const strokeFactor : number = 90
 const sizeFactor : number = 2.9
 const foreColor : string = "#673AB7"
@@ -76,16 +76,17 @@ class DrawingUtil {
         const cGap : number = gap / parts
         const sc1 : number = ScaleUtil.divideScale(scale, 0, 2)
         const sc2 : number = ScaleUtil.divideScale(scale, 1, 2)
-        const updatedR : number = ScaleUtil.mirrorValue(sc2, i % 2)
-        for (var i = 0; i < parts; i++) {
-            const x : number = 2 * cGap - i * cGap + gap * sc1
+        for (var j = 0; j < parts; j++) {
+            const sc2i : number = ScaleUtil.divideScale(sc2, j, parts)
+            const updatedR : number = cr * ScaleUtil.mirrorValue(sc2i, i % 2)
+            const x : number = 2 * cGap - j * cGap + gap * ScaleUtil.divideScale(sc1, j, parts)
             DrawingUtil.drawCircle(context, x, 0, updatedR, true)
             DrawingUtil.drawCircle(context, x, 0, cr, false)
         }
     }
 
     static drawBLNode(context : CanvasRenderingContext2D, i : number, scale : number) {
-        const gap : number = w / (nodes + 1)
+        const gap : number = w / (nodes + 2)
         const size : number = gap / sizeFactor
         context.strokeStyle = foreColor
         context.fillStyle = foreColor
