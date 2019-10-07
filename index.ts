@@ -6,6 +6,8 @@ const sizeFactor : number = 2.9
 const foreColor : string = "#673AB7"
 const backColor : string = "#bdbdbd"
 const delay : number = 20
+const parts : number = 3
+const nodes : number = 5
 
 class Stage {
 
@@ -46,5 +48,48 @@ class ScaleUtil {
 
     static divideScale(scale : number, i : number, n : number) : number {
         return Math.min(1 / n, ScaleUtil.maxScale(scale, i, n)) * n
+    }
+
+    static mirrorValue(scale : number, k : number) : number {
+        return (1 - scale) * k + scale * (1 - k)
+    }
+}
+
+class DrawingUtil {
+
+    static drawCircle(context : CanvasRenderingContext2D, x : number, y : number, r : number, fill : boolean) {
+        context.beginPath()
+        context.arc(x, y, r, 0, 2 * Math.PI)
+        if (fill) {
+            context.fill()
+        } else {
+            context.stroke()
+        }
+    }
+
+    static drawCircles(context : CanvasRenderingContext2D, i : number, size : number, gap : number, scale : number) {
+        const cr : number = size / (parts + 1)
+        const cGap : number = gap / parts
+        const sc1 : number = ScaleUtil.divideScale(scale, 0, 2)
+        const sc2 : number = ScaleUtil.divideScale(scale, 1, 2)
+        const updatedR : number = ScaleUtil.mirrorValue(sc2, i % 2)
+        for (var i = 0; i < parts; i++) {
+            const x : number = 2 * cGap - i * cGap + gap * sc1
+            DrawingUtil.drawCircle(context, x, 0, updatedR, true)
+            DrawingUtil.drawCircle(context, x, 0, cr, false)
+        }
+    }
+
+    static drawBLNode(context : CanvasRenderingContext2D, i : number, scale : number) {
+        const gap : number = w / (nodes + 1)
+        const size : number = gap / sizeFactor
+        context.strokeStyle = foreColor
+        context.fillStyle = foreColor
+        context.lineCap = 'round'
+        context.lineWidth = Math.min(w, h) / strokeFactor
+        context.save()
+        context.translate(gap * (i + 1), h / 2)
+        DrawingUtil.drawCircles(context, i, size, gap, scale)
+        context.restore()
     }
 }
